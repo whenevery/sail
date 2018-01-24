@@ -1,0 +1,41 @@
+module.exports = {
+    operator:{
+        company:String,
+        username:String,
+        password:String,
+        loginTime:Date,
+        loginCount:Number,
+        errorCount:Number,
+        type:Number,
+        status:Number,
+        roleId:Array,
+        createTime:Date,
+        updateTime:Date
+    },
+    permission:{
+        company:String,
+        name:String,
+        code:String,
+        menuCode:String,
+        createTime:Date,
+        updateTime:Date,
+    },
+    permissionInfo:{//group role
+        company:String,
+        name:String,
+        type:String,
+        permissionCode:Array,
+        groupId:Array,
+        menuCode:Array,
+        createTime:Date,
+        updateTime:Date,
+    },
+    permissionMenu:{
+        company:String,
+        name:String,
+        code:String,
+        parentCode:String,
+        createTime:Date,
+        updateTime:Date,
+    }
+};

@@ -1,0 +1,38 @@
+.inline-block{
+  display: inline-block;
+  line-height:1;
+}
+.block{
+  display:block;
+}
+.overflow{
+  &-hidden{
+    overflow: hidden;
+  }
+  &-scroll{
+    overflow: scroll;
+  }
+  &-scroll-x{
+    overflow-x: scroll;
+  }
+  &-scroll-y{
+    overflow-y: scroll;
+  }
+}
+.display-table{
+  display: table;
+  text-align: center;
+  & > *{
+    display: table-cell;
+    vertical-align: middle;
+  }
+}
+.show{
+  display: block;
+}
+.hide{
+  display: none;
+}
+.opacity-0{
+  opacity: 0;
+}

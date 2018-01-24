@@ -1,0 +1,46 @@
+{
+  "name": "merchant-pc",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.js",
+    "pack": "gulp clean && gulp build && node archive.js"
+  },
+  "dependencies": {
+    "alidayu-node": "^1.0.3",
+    "async": "^1.5.2",
+    "body-parser": "~1.13.2",
+    "captchapng": "0.0.1",
+    "cookie-parser": "~1.3.5",
+    "crypto": "0.0.3",
+    "debug": "~2.2.0",
+    "ejs": "~2.3.3",
+    "express": "~4.13.1",
+    "express-session": "^1.13.0",
+    "log4js": "^0.6.38",
+    "md5": "^2.1.0",
+    "merge-descriptors": "^1.0.1",
+    "mongoose": "^4.13.4",
+    "morgan": "~1.6.1",
+    "multer": "^1.1.0",
+    "request": "^2.72.0",
+    "uuid": "^2.0.2",
+    "vue-cli": "^2.9.2",
+    "ws": "^2.2.0"
+  },
+  "devDependencies": {
+    "archiver": "^1.1.0",
+    "child_process": "^1.0.2",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-filter": "^4.0.0",
+    "gulp-less": "^3.1.0",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-rev": "^7.1.2",
+    "gulp-rev-collector": "^1.1.0",
+    "gulp-uglify": "^2.0.0",
+    "moment": "^2.14.1",
+    "qiniu": "^6.1.13"
+  }
+}

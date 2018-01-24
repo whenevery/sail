@@ -1,0 +1,12 @@
+.shadow-bottom(@color:#eee){
+  box-shadow: 0 0.14rem 0.3rem 0.01rem @color;
+}
+.shadow-top(@color:#eee){
+  box-shadow: 0 -0.14rem 0.3rem 0.01rem @color;
+}
+.shadow-top-auto{
+  .shadow-top();
+}
+.shadow-bottom-auto{
+  .shadow-bottom();
+}
