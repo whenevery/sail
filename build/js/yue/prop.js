@@ -92,6 +92,11 @@
     prop(Object , 'getYueValue' , function(key , autoData){
         autoData = Object.assign(autoData||{},this);
         key+='';
+        if(Yue.filter.check(key)){
+            key = key.split(/\s\|\s/);
+            return Yue.filter.handler(this.getYueValue(key[0]) , key.slice(1));
+        }
+        if(key==='')return '';
         var evalKey = '';
         for(var i in autoData){
             evalKey+='var ' + i + '=autoData.'+i+';';
@@ -105,6 +110,7 @@
         var $this = eventData.$this;
         var $event = eventData.$event;
         var $el = eventData.$el;
+        val = val.trim();
         if(val.indexOf('(')===-1){
             if(this[val]){
                 $this[val]($el , $event);
@@ -116,11 +122,11 @@
             for(var i in data){
                 evalKey+='var ' + i + '=data.'+i+';';
             }
-            if(this[val.split('(')[0]]){
+            var startKey = val.split('(')[0].trim();
+            if(this[startKey]){
                 var index = val.indexOf('(');
-                val = '$this.'+val.split('(')[0]+val.slice(index);
+                val = '$this.'+startKey+val.slice(index);
             }
-            console.log(val);
             evalKey+=val;
             eval(evalKey);
         }

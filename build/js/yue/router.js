@@ -8,6 +8,7 @@
     * */
     var router = Yue.router = {};
     var routers = [],prevRouter;
+    var historyRouters = [];
     var options = router.options = {
         mode:'history',
         viewUrl:'/Yue/view',
@@ -50,33 +51,48 @@
         return params;
     }
     function findRouter(url){
-        var r;
-        routers.every(function(a){
-            if((a.name === url && isRealPath(a.path)) || a.path === url || pathTest(a.path , url)){
-                r = a;
-                console.log(url , a.name , a.path ,pathTest(a.path , url) )
-                return false;
-            }
-            return true;
+        return routers.find(function(a){
+            return a.path === url;
         });
-        return r;
     }
     function setUrl(path , sts){
-        if(router.options.mode === 'history'){
-            if(prevRouter)history.pushState({path:path}, "", path);
+        if(historyRouters[historyRouters.length - 2 ] === path){
+            historyRouters.pop();
         }else{
-            if(prevRouter)history.pushState({path:path});
-            location.hash = path;
+            historyRouters.push(path);
+            if(router.options.mode === 'history'){
+                if(prevRouter){
+                    if(sts){
+                        history.replaceState({path:path}, "", path);
+                    }
+                    else{
+                        history.pushState({path:path}, "", path);
+                    }
+                }
+            }else{
+                if(prevRouter)if(sts){
+                    history.replaceState({path:path});
+                }
+                else{
+                    history.pushState({path:path});
+                }
+                location.hash = path;
+            }
         }
+
     }
     var lastRouter;
     router.push = function(options){
-        if(typeof options === 'object'){
+        if(options && typeof options === 'object'){
             routers.push(options);
         }else{
-            if(options === lastRouter)return false;
+            if(options === historyRouters[historyRouters.length -1])return false;
             lastRouter = options;
-            var r = findRouter(options);
+            var r;
+            if(options === null){
+                r = routers[0];
+            }
+            else r = findRouter(options);
             Yue.trigger('router-before');
             if(r){
                 var realRouter = {
@@ -140,9 +156,14 @@
     };
     window.addEventListener("popstate", function() {
         var currentState = history.state;
-        if(currentState){
-            router.push(currentState.path);
+        console.log('currentState',currentState);
+        console.log('firstRouter',historyRouters[0]);
+        if(!currentState || currentState === historyRouters[0]){
+            // currentState = historyRouters[0];
+            // setUrl(currentState , 1);
+            // return false;
         }
+        router.push(currentState && currentState.path || currentState);
     });
     var loadView = {};
     router.load = function(url , call , sts){

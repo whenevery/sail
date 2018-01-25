@@ -8,8 +8,10 @@ module.exports = function(){
             three:'three',
             clickCount:0,
             text:'text',
-            inputText:'inputText',
+            inputText:'123',
             html:'<div>newdiv</div>',
+            money:12345,
+            obj:'',
         },
         beforeCreated:function(next){
             next();
@@ -29,6 +31,7 @@ module.exports = function(){
         methods:{
             click:function(el,ev){
                 console.log(el,ev);
+                console.log(this);
             }
         },
         watch:{

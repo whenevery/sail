@@ -19,7 +19,4 @@ Yue.config = function(a , b){
         }
     }
 };
-window.onload = function(){
-    Yue.app = document.getElementById('yue');
-    Yue.router.start();
-};
+Yue.readyQueue = [];

@@ -26,10 +26,10 @@
     });
     Yue.directive('timer',{
         insert:function(el , data){
+            el.innerHTML = 0;
             el.timer = setInterval(function(){
                 var innerHTML = el.innerHTML || 0;
                 el.innerHTML = ++innerHTML;
-                console.log('timer' ,el ,el.innerHTML, innerHTML);
             },1000);
         },
         die:function(el , data){

@@ -1,10 +1,14 @@
 (function(){
     Yue.bind('router-before' , function(){
-        removeDom(Yue.autoYueObj && Yue.autoYueObj.__yueDom);
+        if(Yue.autoYueObj && Yue.autoYueObj.__yueDom){
+            removeDom(Yue.autoYueObj.__yueDom);
+            Yue.autoYueObj.__yueDom.remove();
+            delete Yue.autoYueObj.__yueDom;
+        }
         Yue.clearHtml();
     });
     Yue.clearHtml = function(){
-        if(Yue.app)Yue.app.innerHTML = '';
+        if(Yue.routerDom)Yue.routerDom.innerHTML = '';
     };
     function createDom(msg){
         var div = document.createElement('div');
@@ -99,7 +103,17 @@
             if(el.yueOn)el.yueOn.forEach(function(a){
                 if(a.key !=='if'){
                     var dataValue = data.getYueValue(a.val);
-                    if(a.key === 'class'){
+                    if(a.key === 'style'){
+                        var styles;
+                        if(typeof dataValue !== 'object'){
+                            styles = {};
+                            styles[a.key] = dataValue;
+                        }
+                        else styles = dataValue;
+                        for(var style in styles){
+                            cl.style[style] = styles[style];
+                        }
+                    }else if(a.key === 'class'){
                         cl.classList = el.classList;
                         if(dataValue){
                             if(Array.isArray(dataValue)){
@@ -126,7 +140,9 @@
                     }
                 }
             });
-            console.log(el.yueBind);
+            if(el.yueAttr)el.yueAttr.forEach(function(a){
+                cl.setAttribute(a.key , a.val);
+            });
             Yue.domBind(el , methods , data , yueModal);
         }
     }
@@ -137,6 +153,7 @@
         dom.yueDirective = [];
         dom.yueBind = [];
         dom.yueOn = [];
+        dom.yueAttr = [];
         if(dom.getAttributeNames){
             dom.getAttributeNames().forEach(function(key){
                 var val = dom.getAttribute(key);
@@ -151,11 +168,17 @@
                         val:val
                     })
                 }else{
-                    console.log('y-key' , key);
-                    if(key.indexOf('y-')===0)dom.yueDirective.push({
-                        key:key,
-                        val:val
-                    })
+                    if(key.indexOf('y-')===0){
+                        dom.yueDirective.push({
+                            key:key,
+                            val:val
+                        })
+                    }else{
+                        dom.yueAttr.push({
+                            key:key,
+                            val:val
+                        })
+                    }
                 }
             });
         }
@@ -201,7 +224,7 @@
                 Yue.definePropertyGet(yueModal , key , methods);
             }
             evalDom(dom , valueData , methods);
-            Yue.app.appendChild(domClone(dom , valueData , methods , null , yueModal));
+            Yue.routerDom.appendChild(domClone(dom , valueData , methods , null , yueModal));
             if(call)call(yueModal);
         });
         queue.start();

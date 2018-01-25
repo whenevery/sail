@@ -1,15 +1,24 @@
 <div>
-    <div :if="1" :class="[className,showAble?'showAble':'notshow']">{{one.turnKeyUp()}}{{one.turnKeyUp(1).turnKey(2)}}{{2+3+one}}{{showAble?222:111}}{{console.log(2),33}}<div>{{three}}</div></div>
+    <div :if="1" :class="[className,showAble?'showAble':'notshow']">
+        {{one.turnKeyUp()}}{{one.turnKeyUp(1).turnKey(2)}}{{2+3+one}}
+        {{showAble?222:111}}{{console.log(2),33}}
+        <div>{{three}}
+        </div>
+    </div>
     <div @click="this.clickCount++" :class="{a:className,showAble:showAble}">div{{'ss'}}'{{""}}'</div>
     <div @click="console.log(clickCount)">{{clickCount}}</div>
     <div :if="showAble"  >{{two}}</div>
     <div @click="this.showAble=1">showAble</div>
-    <div @click="click">click</div>
+    <div @click="click" :style="{color:'red',background:'black'}">click</div>
     <div y-text="clickCount"></div>
     <div y-html="html"></div>
     <div y-timer="1"></div>
     <div>
-        <input type="text" y-model="inputText">{{inputText}}
+        <input readonly type="number" y-model="inputText">{{inputText}}
     </div>
     <div @click="click(showAble,clickCount)">click</div>
+    <div >{{money | moneyFilter}}</div>
+    <div >{{money | turnMoney}}</div>
+    <div >{{'12345' | reverse}}</div>
+    <div :if="obj">{{obj.a.b}}</div>
 </div>
