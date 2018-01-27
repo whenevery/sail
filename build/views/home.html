@@ -1,7 +1,7 @@
 <div>
     <div :if="1" :class="[className,showAble?'showAble':'notshow']">
-        {{one.turnKeyUp()}}{{one.turnKeyUp(1).turnKey(2)}}{{2+3+one}}
-        {{showAble?222:111}}{{console.log(2),33}}
+        {{one.turnKeyUp()}} || {{one.turnKeyUp(1).turnKey(2)}} ||{{2+3+one}}
+        || {{showAble?222:111}} ||{{console.log(2),33}}
         <div>{{three}}
         </div>
     </div>
@@ -21,4 +21,7 @@
     <div >{{money | turnMoney}}</div>
     <div >{{'12345' | reverse}}</div>
     <div :if="obj">{{obj.a.b}}</div>
+
+</div><div a="1" :for="['a','b','c']">{{item}}-{{index}}<div>{{index*10}}</div>
+    <div a="1" :for="(smItem , smIndex) in ['aa','bb','cc']">{{item}}-{{index}}-{{smItem}}-{{smIndex}}</div>
 </div>

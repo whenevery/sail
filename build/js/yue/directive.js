@@ -5,9 +5,9 @@
     Yue.directive = function(type , options){
         directive['y-'+type.turnKey()] = options;
     };
-    Yue.directive.handler = function(el , data , yueModal){
+    Yue.directive.handler = function(el , data , yueModal , cl){
         var yueDirective = el.yueDirective;
-        var cl = el.yueClone;
+        cl = cl || el.yueClone && el.yueClone[0];
         if(cl && yueDirective && yueDirective.length){
             cl.directiveCount = cl.directiveCount || 0;
             yueDirective.forEach(function(a){
@@ -30,15 +30,22 @@
         }
     };
     Yue.directive.die = function(el , cl){
-        var yueDirective = el.yueDirective;
         cl = cl || el.yueClone;
-        if(cl && yueDirective && yueDirective.length){
-            yueDirective.forEach(function(a){
-                var handler = directive[a.key];
-                if(handler){
-                    handler.die && handler.die(cl);
-                }
+        if(Array.isArray(cl)){
+            cl.forEach(function(cl){
+                Yue.directive.die(el , cl);
             });
+        }
+        else if(cl){
+            var yueDirective = el.yueDirective;
+            if(yueDirective && yueDirective.length){
+                yueDirective.forEach(function(a){
+                    var handler = directive[a.key];
+                    if(handler){
+                        handler.die && handler.die(cl);
+                    }
+                });
+            }
         }
     }
 })();

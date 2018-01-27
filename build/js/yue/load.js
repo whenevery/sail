@@ -31,58 +31,161 @@
         });
         return sts;
     }
-    function domClone(el , data , methods , parent , yueModal ){
-        var cl;
+    function getForData(val , data ){
+        var dataKey = val , valArr , item = 'item' , index = 'index';
+        if(val.indexOf(' in ') > -1){
+            valArr = val.split(' in ');
+            dataKey = valArr[1];
+            var firstStr = valArr[0].replace(/\(|\)/g,'');
+            item = firstStr.split(',')[0];
+            index = firstStr.split(',')[1] || index;
+        }
+        var arr = data.getYueValue(dataKey);
+        var res = [];
+        if(arr){
+            item = item.trim();
+            index = index.trim();
+            if(Array.isArray(arr)){
+                arr.forEach(function(a , i){
+                    var newData = Object.assign({},data);
+                    newData[item] = a;
+                    newData[index] = i;
+                    res.push(newData);
+                });
+            }else{
+                for(var key in arr){
+                    var newData = Object.assign({},data);
+                    newData[item] = arr[key];
+                    newData[index] = key;
+                    res.push(newData);
+                }
+            }
+        }
+        return res;
+    }
+    function copyYueClone(el , yueClone , oldClone , key){
+        var res = [];
+        key = key || 'yueClone';
+        if(!oldClone){
+            oldClone = el[key] = el[key] || [];
+        }
+        if(yueClone){
+            yueClone.forEach(function(a , i){
+                oldClone[i] = oldClone[i] || [];
+                if(Array.isArray(a)){
+                    res[i] = copyYueClone(el , a , oldClone[i] , key);
+                }else{
+                    res[i] = oldClone[i];
+                }
+            })
+        }
+        return res;
+    }
+    function findYueClone(yueClone , index){
+        index = index.slice();
+        var i = index.shift();
+        while (i >= 0){
+            yueClone = yueClone[i] = yueClone[i] || [];
+            i = index.shift();
+        }
+        return yueClone;
+    }
+    function findRealClone(yueClone){
+        if(Array.isArray(yueClone))return yueClone[0];
+        return yueClone;
+    }
+    function domClone(el , data , methods , parent , yueModal , index , parentYueClone){
+        index = index || [0];
+        var yueClone = copyYueClone(el , parentYueClone );
+        var yueExist = copyYueClone(el , parentYueClone , null , 'yueExist');
+        var thisYueClone = findYueClone(yueClone , index);
+        var thisYueExist = findYueClone(yueExist , index);
+        var oldExist = thisYueExist[0];
+        var oldClone = thisYueClone[0];
         if(el.nodeName === '#text'){
             if(!el.textContent.replace(/\s/g,'')){
                 el.remove();
             }else{
                 if(!parent)return false;
-                if(!el.yueClone){
-                    el.yueClone = el.cloneNode(true);
-                    parent.appendChild(el.yueClone);
+                console.log(index , parentYueClone , yueClone , yueClone[0] , thisYueClone , thisYueClone.length);
+                if(!oldClone){
+                    oldClone = el.cloneNode(true);
+                    thisYueClone.push(oldClone);
+                    parent.appendChild(oldClone);
+                    console.log(thisYueClone, thisYueClone.length);
                 }
-                el.yueClone.textContent = data.getYueTextContent(el.textContent);
+                console.log(index , parentYueClone , yueClone , yueClone[0] , thisYueClone , thisYueClone.length);
+                var newText = data.getYueTextContent( el.textContent );
+                if(newText !== oldClone.textContent )
+                {
+                    oldClone.textContent = newText;
+                }
             }
             return false;
         }
-        var oldExist = el.yueExist;
-        var oldClone = el.yueClone;
-        el.yueExist = checkExist(el , data);
-        var existChange = el.yueExist !== oldExist || !oldClone;
-        if(el.yueExist){
-            if(existChange){
-                cl = document.createElement(el.tagName || el.nodeName);
-                el.yueClone = cl;
+
+        thisYueExist[0] = checkExist(el , data);
+        var existChange = thisYueExist[0] !== oldExist || !oldClone;
+        var cl;
+        if(thisYueExist[0]){
+            var forData = [data];
+            var forOn = el.yueOn.find(function(a){return a.key === 'for'});
+            if(existChange) thisYueClone[0] = [];
+            if(forOn){
+                forData= getForData(forOn.val , data);
             }
-            domShow(el  , data , methods ,yueModal);
-            [].slice.call(el.childNodes).forEach(function(a){
-                domClone(a , data , methods , el.yueClone , yueModal);
+            thisYueClone = thisYueClone[0];
+            var prevDom = oldClone;
+            forData.forEach(function(data , i){
+                cl = thisYueClone[i];
+                if(existChange || !cl){
+                    cl = document.createElement(el.tagName || el.nodeName);
+                    thisYueClone[i] = [cl];
+                    if(prevDom){
+                        console.log(yueClone , index , thisYueClone , oldClone ,prevDom , parentYueClone);
+                        prevDom.after(cl);
+                        if(oldClone)oldClone.remove();
+                    }else{
+                        if(parent)parent.appendChild(cl);
+                    }
+                    prevDom = cl;
+                }
+                domShow(el  , data , methods , yueModal , cl);
+                [].slice.call(el.childNodes).forEach(function(a){
+                    var arr = index.slice();
+                    var newClone = parentYueClone;
+                    if(forOn){
+                        newClone = yueClone;
+                        arr.push(i);
+                    }
+                    domClone(a , data , methods , cl, yueModal , arr , newClone);
+                });
             });
         }else{
             if(existChange){
                 cl = createDom('<!------>');
-                el.yueClone = cl;
-            }
-        }
-        if(existChange){
-            if(oldClone){
-                oldClone.after(cl);
-                if(el.yueExist){
-                    oldClone.remove();
+                thisYueClone[0] = cl;
+                if(oldClone){
+                    oldClone.after(cl);
+                    removeDom(el , oldClone);
+                }else{
+                    if(parent)parent.appendChild(cl);
                 }
-                else removeDom(el , oldClone);
-            }else{
-                if(parent)parent.appendChild(cl);
-            }
+            }else cl = oldClone[0]
         }
         return cl;
     }
     function removeDom(dom , oldClone){
+        if(Array.isArray(oldClone)){
+            return oldClone.forEach(function(a){
+                removeDom(dom , a);
+            });
+        }
         if(dom){
             if(dom.tagName){
                 Yue.directive.die(dom , oldClone);
                 Yue.domUnBind(dom , oldClone);
+                if(oldClone)delete oldClone.yueData;
                 [].slice.call(dom.childNodes).forEach(function(a){
                     var oldClone = a.yueClone;
                     delete a.yueClone;
@@ -92,16 +195,18 @@
             if(oldClone)oldClone.remove();
         }
     }
-    function domShow(el , data , methods ,yueModal){
-        var cl = el.yueClone;
+    function domShow(el , data , methods ,yueModal , cl){
+        cl = cl || el.yueClone[0];
         if(cl){
-            if(el.nodeName === '#text'){
-                cl.textContent = data.getYueTextContent(el.textContent);
+            if(cl.nodeName === '#text'){
+                var newText = data.getYueTextContent(el.textContent);
+                if(cl.textContent !== newText)cl.textContent = newText;
                 return false;
             }
-            Yue.directive.handler(el , data , yueModal);
+            cl.yueData = data;
+            Yue.directive.handler(el , data , yueModal , cl);
             if(el.yueOn)el.yueOn.forEach(function(a){
-                if(a.key !=='if'){
+                if(['if','for'].indexOf(a.key) === -1){
                     var dataValue = data.getYueValue(a.val);
                     if(a.key === 'style'){
                         var styles;
@@ -143,7 +248,7 @@
             if(el.yueAttr)el.yueAttr.forEach(function(a){
                 cl.setAttribute(a.key , a.val);
             });
-            Yue.domBind(el , methods , data , yueModal);
+            Yue.domBind(el , methods , data , yueModal , cl);
         }
     }
     function evalDom(dom , data , methods){

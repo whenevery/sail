@@ -43,7 +43,6 @@
         return this.replace(/[A-Z]/g,function(a){return split + a.toLowerCase()});
     });
     prop(String , 'turnKeyUp' , function(split){
-        console.log(split);
         split = split || '-';
         return this.replace(new RegExp(split+'\\w','g'),function(a){return a.slice(1).toUpperCase()});
     });
@@ -106,15 +105,17 @@
         eval(evalKey);
         return resData;
     });
-    prop(Object , 'doYueMethod' , function(val , eventData , data){
+    prop(Object , 'doYueMethod' , function(val , eventData){
         var $this = eventData.$this;
         var $event = eventData.$event;
         var $el = eventData.$el;
+        var data = $el.yueData;
         val = val.trim();
         if(val.indexOf('(')===-1){
             if(this[val]){
                 $this[val]($el , $event);
             }else{
+                console.log(val , $this);
                 new Function(val).call($this);
             }
         }else{
@@ -128,6 +129,7 @@
                 val = '$this.'+startKey+val.slice(index);
             }
             evalKey+=val;
+            console.log(data , evalKey);
             eval(evalKey);
         }
     });
