@@ -8,7 +8,7 @@
     <div @click="this.clickCount++" :class="{a:className,showAble:showAble}">div{{'ss'}}'{{""}}'</div>
     <div @click="console.log(clickCount)">{{clickCount}}</div>
     <div :if="showAble"  >{{two}}</div>
-    <div @click="this.showAble=1">showAble</div>
+    <div @click="this.showAble=!this.showAble">showAble</div>
     <div @click="click" :style="{color:'red',background:'black'}">click</div>
     <div y-text="clickCount"></div>
     <div y-html="html"></div>
@@ -20,8 +20,12 @@
     <div >{{money | moneyFilter}}</div>
     <div >{{money | turnMoney}}</div>
     <div >{{'12345' | reverse}}</div>
-    <div :if="obj">{{obj.a.b}}</div>
-
-</div><div a="1" :for="['a','b','c']">{{item}}-{{index}}<div>{{index*10}}</div>
-    <div a="1" :for="(smItem , smIndex) in ['aa','bb','cc']">{{item}}-{{index}}-{{smItem}}-{{smIndex}}</div>
+    <div :if="obj">{{obj.a}}</div>
+    <div a="1" :for="arr0" @click="arrClick('arr0' , index)">
+        {{item}}-{{index}}
+        <div>{{index*10}}</div>
+        <div a="2" :for="(smItem , smIndex) in arr1" @click="arrClick('arr1' , smIndex)">smItem--{{item}}-{{index}}-{{smItem}}-{{smIndex}}--smIndex</div>
+    </div>
+    <div a="3" :for="(smItem , smIndex) in ['aa','bb','cc']">smItem--{{smItem}}-{{smIndex}}--smIndex</div>
+    <div a="4" :for="smItem in ['aaa','bbb','ccc']">smItem--{{smItem}}-{{index}}--smIndex</div>
 </div>

@@ -129,7 +129,6 @@
                 val = '$this.'+startKey+val.slice(index);
             }
             evalKey+=val;
-            console.log(data , evalKey);
             eval(evalKey);
         }
     });
